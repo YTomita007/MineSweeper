@@ -118,7 +118,7 @@ public class MineSweeper extends JFrame implements ActionListener{
         for(i=0; i<boms; i++){
             bom[i] = list.get(i);   // ArrayListから爆弾セル番号を格納
             // 開発時に爆弾を意図的に表示する場合は下の行をコメントアウト解除する
-            // button[bom[i]].setText("*");
+            button[bom[i]].setText("*");
         }
     }
 
@@ -198,10 +198,10 @@ public class MineSweeper extends JFrame implements ActionListener{
     }
 
     public boolean openCells(int cellNum){
-        // System.out.println(cellNum);    // デバッグ用
         if(cellNum < 0 || cellNum > cells){
             return false;
         }
+        // System.out.println(cellNum);    // デバッグ用
         if(button[cellNum].isEnabled()){
             if(num[cellNum]<10){      // 爆弾セルの番号を10にしているので10以下であればセーフ
                 bomsAmount = "" + num[cellNum];
@@ -219,21 +219,29 @@ public class MineSweeper extends JFrame implements ActionListener{
                     button[cellNum].setText(bomsAmount);
                     return false;
                 }else{
-                    if(cellNum - cell >= 0){
+                    if(cellNum - cell >= 0){        // セル番号が0以下の場合判定しない（IndexOutBoundException回避のため）
                         openCells(cellNum - cell);
                     }
-                    if(cellNum % cell != 0){
-                        openCells(cellNum - cell - 1);
-                        openCells(cellNum - 1);
-                        openCells(cellNum + cell - 1);
-                    }
-                    if((cellNum + 1) % cell != 0){
-                        openCells(cellNum - cell + 1);
-                        openCells(cellNum + 1);
-                        openCells(cellNum + cell + 1);
-                    }
-                    if(cellNum + cell <= cells){
+                    if(cellNum + cell < cells){    // セル番号がcells以上の場合判定しない（IndexOutBoundException回避のため）
                         openCells(cellNum + cell);
+                    }
+                    if(cellNum % cell != 0){        // セル番号がcellで割り切れる場合、選択したセルは最上辺セルなので検証しない
+                        if(cellNum - cell - 1 >= 0){        // セル番号が0以下の場合判定しない（IndexOutBoundException回避のため）
+                            openCells(cellNum - cell - 1);
+                        }
+                        openCells(cellNum - 1);
+                        if(cellNum + cell - 1 < cells){    // セル番号がcells以上の場合判定しない（IndexOutBoundException回避のため）
+                            openCells(cellNum + cell - 1);
+                        }
+                    }
+                    if((cellNum + 1) % cell != 0){  // セル番号+1がcellで割り切れる場合、選択したセルは最底辺セルなので検証しない
+                        if(cellNum - cell + 1 >= 0){        // セル番号が0以下の場合判定しない（IndexOutBoundException回避のため）
+                            openCells(cellNum - cell + 1);
+                        }
+                        openCells(cellNum + 1);
+                        if(cellNum + cell + 1 < cells){    // セル番号がcells以上の場合判定しない（IndexOutBoundException回避のため）
+                            openCells(cellNum + cell + 1);
+                        }
                     }
                     return false;
                 }
@@ -244,10 +252,10 @@ public class MineSweeper extends JFrame implements ActionListener{
         return false;
     }
 
-    public void checkBom(int clickPlace) {
-        for(int bomInspection : bom){
+    public void checkBom(int clickPlace) {  // 爆弾を選択した場合にチェック
+        for(int bomInspection : bom){       // 爆弾配列番号と選択したセル番号を比較ループ
             if(bomInspection == clickPlace){
-                for(i=0; i<boms; i++){
+                for(i=0; i<boms; i++){      // 数字が一致する場合は全ての爆弾を表示する
                     button[bom[i]].setForeground(Color.RED);
                     button[bom[i]].setText("※");
                 }
@@ -257,34 +265,36 @@ public class MineSweeper extends JFrame implements ActionListener{
         }
     }
 
-    public void actionPerformed(ActionEvent e){
+    public void actionPerformed(ActionEvent e){     // クリックアクションメソッド
         cmd = e.getActionCommand();
         key = e.getModifiers();
         if(cmd.equals("reset")){
             sm = new StartMenu("StartMenu");
             sm.setVisible(true);
             setVisible(false);
-            if(result.isVisible()){
-                result.setVisible(false);
+            if(result != null){
+                if(result.isVisible()){
+                    result.setVisible(false);
+                }
             }
         }
         checkLoop:
         for(i=0; i<cells; i++){
-            if(cmd.equals("a" + i)){
+            if(cmd.equals("a" + i)){    // 右クリックにてフラグ（×マーク）制御
                 if((key & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK){
                     button[i].setForeground(Color.RED);
                     button[i].setText("×");
                     button[i].setActionCommand("b" + i);
                     inspectionBom++;
                     countBoms();
-                }else{
+                }else{      // 通常クリックの動作（openCellsメソッド呼び出し）
                     while(openCells(i));
                     checkBom(Integer.parseInt(cmd.substring(1)));
                     break checkLoop;
                 }                
             }
 
-            if(cmd.equals("b" + i)){
+            if(cmd.equals("b" + i)){    // 右クリックにてフラグ（?マーク）制御
                 if((key & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK){
                     button[i].setForeground(Color.BLUE);
                     button[i].setText("？");
@@ -294,7 +304,7 @@ public class MineSweeper extends JFrame implements ActionListener{
                 }
             }
 
-            if(cmd.equals("c" + i)){
+            if(cmd.equals("c" + i)){    // 右クリックにてフラグ制御を解除
                 if((key & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK){
                     button[i].setBackground(Color.LIGHT_GRAY);
                     button[i].setText("");
