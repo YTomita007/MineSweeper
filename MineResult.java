@@ -1,7 +1,7 @@
 import java.awt.*;
 import javax.swing.*;
 
-public class Result extends JFrame{
+public class MineResult extends JFrame{
     
     JPanel panel = new JPanel();
     Image img;
@@ -9,10 +9,10 @@ public class Result extends JFrame{
 
     // 開発用に作成（実際のプレーではインスタンス化して使用するのでここから起動しない）
     // public static void main(String[] args) {
-    //     Result result = new Result("result", 1);
+    //     MineResult result = new Result("result", 1);
     // }
 
-    Result(String title, int pattern){
+    MineResult(String title, int pattern){
         setTitle(title);
 
         if(pattern == 1){

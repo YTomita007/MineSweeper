@@ -6,32 +6,32 @@ import javax.swing.*;
 
 public class MineSweeper extends JFrame implements ActionListener{
 
-    final int easy[] = {8, 50, 10};   // 難易度別{1列のセルの数、セル一辺の長さ、爆弾の数}
+    final int easy[] = {8, 50, 10}; // 難易度別{1列のセルの数、セル一辺の長さ、爆弾の数}
     final int normal[] = {16, 30, 40};
     final int hard[] = {24, 20, 100};
 
-    int btn;            // セル番号
-    int key;            // 押されたキー情報
-    int i, j, k;        // カウンタ変数
-    int level[] = new int[3];
-    String bomsAmount;  // 周りの爆弾の数を文字にして代入する変数
-    String cmd;         // ActionCommandを格納する変数
+    int btn;                        // セル番号
+    int key;                        // 押されたキー情報
+    int i, j, k;                    // カウンタ変数
+    int level[] = new int[3];       // レベル設定
+    String bomsAmount;              // 周りの爆弾の数を文字にして代入する変数
+    String cmd;                     // ActionCommandを格納する変数
     JPanel panel = new JPanel();    // パネルを利用;
     ArrayList<Integer> list;        // 爆弾を配置するために必要
 
-    int cell;           // 1列のセルの数
-    int cells;          // ボード全てのセルの数
-    int side;           // セル一辺の長さ
-    int boms;           // 爆弾の数
-    int bom[];          // 爆弾設置のセル番号
-    int num[];          // 周りの爆弾数
-    int inspectionBom;  // 爆弾だと思う変数
-    int victoryNum;     // 勝利条件変数
-    JButton button[];   // ボードの生成
-    JButton rButton;    // リセットボタン
-    JLabel countLabel;  // ラベルの生成
-    StartMenu sm;       // StartMenu再表示
-    Result result;      // 結果画面
+    int cell;                       // 1列のセルの数
+    int cells;                      // ボード全てのセルの数
+    int side;                       // セル一辺の長さ
+    int boms;                       // 爆弾の数
+    int bom[];                      // 爆弾設置のセル番号
+    int num[];                      // 周りの爆弾数
+    int inspectionBom;              // 爆弾だと思う変数
+    int victoryNum;                 // 勝利条件変数
+    JButton button[];               // ボードの生成
+    JButton rButton;                // リセットボタン
+    JLabel countLabel;              // ラベルの生成
+    StartMenu sm;                   // StartMenu再表示
+    MineResult mineResult;          // 結果画面
     
     // 開発用に作成（実際のプレーではインスタンス化して使用するのでここから起動しない）
     // public static void main(String[] args) {
@@ -65,7 +65,6 @@ public class MineSweeper extends JFrame implements ActionListener{
         countLabel = new JLabel("残りの爆弾の数");
     
         setTitle(title);
-        // setLocationRelativeTo(null);
         setSize(cell * side + 10, cell * side + 80);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -95,7 +94,6 @@ public class MineSweeper extends JFrame implements ActionListener{
                 btn = i*cell+j;    // 0〜exまでの番号
                 button[btn] = new JButton();
                 button[btn].setOpaque(true);    // セルの透明性の有効
-                // button[btn].setBorderPainted(false);  // セルの枠線を消す
                 button[btn].setBackground(Color.LIGHT_GRAY);
                 button[btn].setBounds(i*side, j*side + 30, side, side);
                 button[btn].addActionListener(this);
@@ -118,7 +116,7 @@ public class MineSweeper extends JFrame implements ActionListener{
         for(i=0; i<boms; i++){
             bom[i] = list.get(i);   // ArrayListから爆弾セル番号を格納
             // 開発時に爆弾を意図的に表示する場合は下の行をコメントアウト解除する
-            button[bom[i]].setText("*");
+            // button[bom[i]].setText("*");
         }
     }
 
@@ -213,7 +211,7 @@ public class MineSweeper extends JFrame implements ActionListener{
                         button[bom[i]].setForeground(Color.RED);
                         button[bom[i]].setText("※");
                     }    
-                    result = new Result("result", 1);
+                    mineResult = new MineResult("result", 1);
                 }
                 if(num[cellNum] != 0){
                     button[cellNum].setText(bomsAmount);
@@ -260,7 +258,7 @@ public class MineSweeper extends JFrame implements ActionListener{
                     button[bom[i]].setText("※");
                 }
                 button[clickPlace].setEnabled(false);
-                result = new Result("result", 2);
+                mineResult = new MineResult("result", 2);
             }
         }
     }
@@ -272,9 +270,9 @@ public class MineSweeper extends JFrame implements ActionListener{
             sm = new StartMenu("StartMenu");
             sm.setVisible(true);
             setVisible(false);
-            if(result != null){
-                if(result.isVisible()){
-                    result.setVisible(false);
+            if(mineResult != null){
+                if(mineResult.isVisible()){
+                    mineResult.setVisible(false);
                 }
             }
         }
